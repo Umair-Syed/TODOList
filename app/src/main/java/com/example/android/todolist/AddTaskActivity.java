@@ -94,9 +94,7 @@ public class AddTaskActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
     }
 
-    /**
-     * initViews is called from onCreate to init the member variable views
-     */
+
     private void initViews() {
         mEditText = findViewById(R.id.editTextTaskDescription);
         mRadioGroup = findViewById(R.id.radioGroup);
@@ -110,11 +108,7 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * populateUI would be called to populate the UI when in update mode
-     *
-     * @param task the taskEntry to populate the UI
-     */
+
     private void populateUI(TaskEntry task) {
         if (task == null ){
             return;
@@ -123,16 +117,13 @@ public class AddTaskActivity extends AppCompatActivity {
         setPriorityInViews(task.getPriority());
     }
 
-    /**
-     * onSaveButtonClicked is called when the "save" button is clicked.
-     * It retrieves user input and inserts that new task data into the underlying database.
-     */
+
     public void onSaveButtonClicked() {
         String description = mEditText.getText().toString();
         int priority = getPriorityFromViews();
         Date date = new Date();
 
-        final TaskEntry taskEntry = new TaskEntry(description, priority, date);
+        final TaskEntry taskEntry = new TaskEntry(description, priority, date, false );
 
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
@@ -148,9 +139,7 @@ public class AddTaskActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * getPriority is called whenever the selected priority needs to be retrieved
-     */
+
     public int getPriorityFromViews() {
         int priority = 1;
         int checkedId = ((RadioGroup) findViewById(R.id.radioGroup)).getCheckedRadioButtonId();
@@ -167,11 +156,7 @@ public class AddTaskActivity extends AppCompatActivity {
         return priority;
     }
 
-    /**
-     * setPriority is called when we receive a task from MainActivity
-     *
-     * @param priority the priority value
-     */
+
     public void setPriorityInViews(int priority) {
         switch (priority) {
             case PRIORITY_HIGH:

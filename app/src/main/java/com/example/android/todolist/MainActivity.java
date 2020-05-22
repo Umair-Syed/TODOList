@@ -10,6 +10,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -52,13 +53,13 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
 
             @Override
-            public void onSwiped(final RecyclerView.ViewHolder viewHolder, int swipeDir) {
+            public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int swipeDir) {
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
@@ -97,9 +98,11 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         viewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
             @Override
-            public void onChanged(List<TaskEntry> taskEntries) {
+            public void onChanged(List<TaskEntry> taskEntries) { //runs on main thread
                 mAdapter.setTasks(taskEntries);
             }
         });
     }
+
+
 }

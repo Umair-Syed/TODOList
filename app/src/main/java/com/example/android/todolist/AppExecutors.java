@@ -24,6 +24,7 @@ public class AppExecutors {
         this.mainThread = mainThread;
     }
 
+    //For singleton instantiation
     public static AppExecutors getInstance() {
         if (sInstance == null) {
             synchronized (LOCK) {

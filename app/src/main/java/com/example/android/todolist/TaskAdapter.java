@@ -59,9 +59,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         holder.taskDescriptionView.setText(description);
         holder.updatedAtView.setText(updatedAt);
 
-
-        String priorityString = "" + priority;
-        holder.priorityView.setText(priorityString);
+        holder.priorityView.setText(Integer.toString(position+1));
 
         GradientDrawable priorityCircle = (GradientDrawable) holder.priorityView.getBackground();
 
