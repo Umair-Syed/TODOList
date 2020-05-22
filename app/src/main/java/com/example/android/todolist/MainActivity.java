@@ -2,12 +2,15 @@ package com.example.android.todolist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.example.android.todolist.database.AppDatabase;
 import com.example.android.todolist.database.TaskEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -22,7 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 
-public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener {
+public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener, TaskAdapter.CheckBoxCheckListener {
 
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -38,11 +41,10 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         setContentView(R.layout.activity_main);
 
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
-
-
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mAdapter = new TaskAdapter(this, this);
+
+        mAdapter = new TaskAdapter(this, this, this);
         mRecyclerView.setAdapter(mAdapter);
 
         DividerItemDecoration decoration = new DividerItemDecoration(getApplicationContext(), VERTICAL);
@@ -51,9 +53,14 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         mDb = AppDatabase.getInstance(getApplicationContext());
 
 
-        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                int position_dragged = viewHolder.getAdapterPosition();
+                int position_target = target.getAdapterPosition();
+
+                Collections.swap(mAdapter.getTasks(), position_dragged, position_target);
+                mAdapter.notifyItemMoved(position_dragged, position_target);
                 return false;
             }
 
@@ -87,12 +94,48 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.delete_all_tasks:
+                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        mDb.taskDao().deleteAll();
+                    }
+                });
+                return true;
+            case R.id.remove_ads:
+                return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
     public void onItemClickListener(int itemId) {
         Intent intent = new Intent(MainActivity.this, AddTaskActivity.class);
         intent.putExtra(AddTaskActivity.EXTRA_TASK_ID, itemId);
         startActivity(intent);
     }
 
+    @Override
+    public void onCheckBoxCheckListener(final TaskEntry taskEntry, final boolean isChecked) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                taskEntry.setChecked(isChecked);
+                mDb.taskDao().updateTask(taskEntry);
+
+            }
+        });
+    }
 
     private void setupViewModel() {
         MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);

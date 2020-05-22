@@ -3,10 +3,13 @@
 package com.example.android.todolist;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.example.android.todolist.database.TaskEntry;
@@ -24,6 +27,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private static final String DATE_FORMAT = "dd/MM/yyy";
 
     final private ItemClickListener mItemClickListener;
+    final private CheckBoxCheckListener mCheckBoxCheckListener;
     // Class variables for the List that holds task data and the Context
     private List<TaskEntry> mTaskEntries;
     private Context mContext;
@@ -31,9 +35,10 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
 
-    public TaskAdapter(Context context, ItemClickListener listener) {
+    public TaskAdapter(Context context, ItemClickListener listener, CheckBoxCheckListener mCheckBoxCheckListener) {
         mContext = context;
         mItemClickListener = listener;
+        this.mCheckBoxCheckListener = mCheckBoxCheckListener;
     }
 
 
@@ -61,10 +66,24 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         holder.priorityView.setText(Integer.toString(position+1));
 
+
+        holder.checkBox.setChecked(taskEntry.isChecked());
+
+        if(taskEntry.isChecked()){
+            holder.taskDescriptionView.setBackgroundResource(R.drawable.strike_through);
+            holder.taskDescriptionView.setTextColor(Color.GRAY);
+        }else {
+            holder.taskDescriptionView.setBackgroundResource(0);
+            holder.taskDescriptionView.setTextColor(ContextCompat.getColor(mContext, R.color.list_item_text_color));
+        }
+
+
         GradientDrawable priorityCircle = (GradientDrawable) holder.priorityView.getBackground();
 
         int priorityColor = getPriorityColor(priority);
         priorityCircle.setColor(priorityColor);
+
+
     }
 
     /*
@@ -114,13 +133,19 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         void onItemClickListener(int itemId);
     }
 
+    public interface CheckBoxCheckListener {
+        void onCheckBoxCheckListener(TaskEntry taskEntry, boolean isChecked);
+    }
+
+
     // Inner class for creating ViewHolders
-    class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
 
         TextView taskDescriptionView;
         TextView updatedAtView;
         TextView priorityView;
+        CheckBox checkBox;
 
 
         public TaskViewHolder(View itemView) {
@@ -129,13 +154,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             taskDescriptionView = itemView.findViewById(R.id.taskDescription);
             updatedAtView = itemView.findViewById(R.id.taskUpdatedAt);
             priorityView = itemView.findViewById(R.id.priorityTextView);
+            checkBox = itemView.findViewById(R.id.checkBox);
             itemView.setOnClickListener(this);
+            checkBox.setOnCheckedChangeListener(this);
         }
 
         @Override
         public void onClick(View view) {
             int elementId = mTaskEntries.get(getAdapterPosition()).getId();
             mItemClickListener.onItemClickListener(elementId);
+        }
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            mCheckBoxCheckListener.onCheckBoxCheckListener(mTaskEntries.get(getAdapterPosition()), isChecked);
         }
     }
 }
