@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.example.android.todolist.database.AppDatabase;
 import com.example.android.todolist.database.TaskEntry;
@@ -123,20 +124,26 @@ public class AddTaskActivity extends AppCompatActivity {
         int priority = getPriorityFromViews();
         Date date = new Date();
 
-        final TaskEntry taskEntry = new TaskEntry(description, priority, date, false );
+        if(description.equals("")){
+            Toast.makeText(this,"Describe your task", Toast.LENGTH_SHORT).show();
+        }else{
+            final TaskEntry taskEntry = new TaskEntry(description, priority, date, false );
 
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                if(mTaskId == DEFAULT_TASK_ID){
-                    mDb.taskDao().insertTask(taskEntry);
-                }else {
-                    taskEntry.setId(mTaskId);
-                    mDb.taskDao().updateTask(taskEntry);
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    if(mTaskId == DEFAULT_TASK_ID){
+                        mDb.taskDao().insertTask(taskEntry);
+                    }else {
+                        taskEntry.setId(mTaskId);
+                        mDb.taskDao().updateTask(taskEntry);
+                    }
+                    finish(); //automatically return to main activity
                 }
-                finish(); //automatically return to main activity
-            }
-        });
+            });
+        }
+
+
     }
 
 

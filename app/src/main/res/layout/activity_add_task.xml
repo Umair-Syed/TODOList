@@ -81,6 +81,6 @@
         android:layout_gravity="center"
         android:background="@color/colorPrimary"
         android:text="@string/add_button"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/white" />
 
 </LinearLayout>
