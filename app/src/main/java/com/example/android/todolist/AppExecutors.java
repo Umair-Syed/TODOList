@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 
-
+//Executors helps in sequencetial execution, otherwise we use Thread runnable which may cause race condition
 public class AppExecutors {
 
     // For Singleton instantiation
@@ -29,7 +29,7 @@ public class AppExecutors {
         if (sInstance == null) {
             synchronized (LOCK) {
                 sInstance = new AppExecutors(Executors.newSingleThreadExecutor(),
-                        Executors.newFixedThreadPool(3),
+                        Executors.newFixedThreadPool(10),
                         new MainThreadExecutor());
             }
         }

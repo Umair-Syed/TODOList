@@ -10,8 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.todolist.database.TaskEntry;
@@ -46,7 +44,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
     @NonNull
     @Override
-    public TaskViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // Inflate the task_layout to a view
         View view = LayoutInflater.from(mContext)
                 .inflate(R.layout.task_layout, parent, false);
@@ -135,17 +133,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         notifyDataSetChanged();
     }
 
+
     public interface ItemClickListener {
         void onItemClickListener(int itemId);
     }
 
     public interface CheckBoxCheckListener {
-        void onCheckBoxCheckListener(TaskEntry taskEntry, boolean isChecked);
+        void onCheckBoxCheckListener(TaskEntry taskEntry);
     }
 
 
     // Inner class for creating ViewHolders
-    class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+    class TaskViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
 
         TextView taskDescriptionView;
@@ -162,7 +161,20 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             priorityView = itemView.findViewById(R.id.priorityTextView);
             checkBox = itemView.findViewById(R.id.checkBox);
             itemView.setOnClickListener(this);
-            checkBox.setOnCheckedChangeListener(this);
+
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(mTaskEntries.get(getAdapterPosition()).isChecked()){
+                        mTaskEntries.get(getAdapterPosition()).setChecked(false);
+                    }else {
+                        mTaskEntries.get(getAdapterPosition()).setChecked(true);
+                    }
+                    Log.d("adpatercheck", "is checked  " + mTaskEntries.get(getAdapterPosition()).isChecked());
+                    mCheckBoxCheckListener.onCheckBoxCheckListener(mTaskEntries.get(getAdapterPosition()));
+                }
+            });
+
         }
 
         @Override
@@ -171,10 +183,5 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             mItemClickListener.onItemClickListener(elementId);
         }
 
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-            mCheckBoxCheckListener.onCheckBoxCheckListener(mTaskEntries.get(getAdapterPosition()), isChecked);
-        }
     }
 }

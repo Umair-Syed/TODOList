@@ -18,7 +18,6 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -39,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private ProgressBar mprogressBar;
     private TextView mProgressValue;
     private TextView mEmptyView;
+//    private CheckBox mCheckBox;
 
     private double mTotalProgressPercent;
     private AppDatabase mDb;
@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
         mProgressValue = findViewById(R.id.progressValue);
         mEmptyView = findViewById(R.id.emptyView);
+//        mCheckBox = findViewById(R.id.checkBox);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -101,6 +102,14 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             }
         });
 
+//        mCheckBox.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
+
+
         setupViewModel();
     }
 
@@ -137,18 +146,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     }
 
     @Override
-    public void onCheckBoxCheckListener(final TaskEntry taskEntry, final boolean isChecked) {
-
+    public void onCheckBoxCheckListener(final TaskEntry taskEntry) {
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                taskEntry.setChecked(isChecked);
                 mDb.taskDao().updateTask(taskEntry);
-
+                Log.d("oncheckList", " "+taskEntry.isChecked() +"---");
             }
         });
-
     }
+
 
     private void setupViewModel() {
         MainViewModel viewModel = new ViewModelProvider(this).get(MainViewModel.class);
