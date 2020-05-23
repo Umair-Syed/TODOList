@@ -2,9 +2,12 @@ package com.example.android.todolist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.android.todolist.database.AppDatabase;
 import com.example.android.todolist.database.TaskEntry;
@@ -15,6 +18,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -32,7 +36,11 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
+    private ProgressBar mprogressBar;
+    private TextView mProgressValue;
+    private TextView mEmptyView;
 
+    private double mTotalProgressPercent;
     private AppDatabase mDb;
 
     @Override
@@ -40,9 +48,12 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mprogressBar = findViewById(R.id.progressBar);
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mProgressValue = findViewById(R.id.progressValue);
+        mEmptyView = findViewById(R.id.emptyView);
 
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mAdapter = new TaskAdapter(this, this, this);
         mRecyclerView.setAdapter(mAdapter);
@@ -127,6 +138,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
     @Override
     public void onCheckBoxCheckListener(final TaskEntry taskEntry, final boolean isChecked) {
+
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
@@ -135,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
             }
         });
+
     }
 
     private void setupViewModel() {
@@ -142,9 +155,36 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         viewModel.getTasks().observe(this, new Observer<List<TaskEntry>>() {
             @Override
             public void onChanged(List<TaskEntry> taskEntries) { //runs on main thread
+
+
+                if(taskEntries.isEmpty()){
+                    mprogressBar.setVisibility(View.INVISIBLE);
+                    mProgressValue.setVisibility(View.INVISIBLE);
+                    mRecyclerView.setVisibility(View.INVISIBLE);
+                    mEmptyView.setVisibility(View.VISIBLE);
+                }else {
+                    mprogressBar.setVisibility(View.VISIBLE);
+                    mProgressValue.setVisibility(View.VISIBLE);
+                    mRecyclerView.setVisibility(View.VISIBLE);
+                    mEmptyView.setVisibility(View.GONE);
+                }
+
+                calculatePercent(taskEntries);
+                mprogressBar.setProgress((int)mTotalProgressPercent);
+                mProgressValue.setText((int)mTotalProgressPercent + " %");
+
+                Log.d("setupVM", " called TotalPercent = " + (int)mTotalProgressPercent );
                 mAdapter.setTasks(taskEntries);
             }
         });
+    }
+
+    private void calculatePercent(List<TaskEntry> taskEntries) {
+        int countChecked = 0;
+        for(TaskEntry i: taskEntries){
+            if(i.isChecked()) countChecked++;
+        }
+        mTotalProgressPercent = (double)countChecked/taskEntries.size() *100;
     }
 
 
