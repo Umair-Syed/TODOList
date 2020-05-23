@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package com.example.android.todolist;
+package com.skapps.android.todolist;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,8 +24,8 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.example.android.todolist.database.AppDatabase;
-import com.example.android.todolist.database.TaskEntry;
+import com.skapps.android.todolist.database.AppDatabase;
+import com.skapps.android.todolist.database.TaskEntry;
 
 import java.util.Date;
 

@@ -1,4 +1,4 @@
-package com.example.android.todolist;
+package com.skapps.android.todolist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,9 +14,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.android.todolist.database.AppDatabase;
-import com.example.android.todolist.database.TaskEntry;
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
+import com.skapps.android.todolist.database.AppDatabase;
+import com.skapps.android.todolist.database.TaskEntry;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -30,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
@@ -42,11 +46,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 
-public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener, TaskAdapter.CheckBoxCheckListener {
+public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener, TaskAdapter.CheckBoxCheckListener{
 
+    private String PRODUCT_ID = "com.skapps.android.todolist.id";
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-
+    private CheckPurchase mCheckPurchase;
     private RecyclerView mRecyclerView;
     private TaskAdapter mAdapter;
     private ProgressBar mprogressBar;
@@ -55,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     private AdView mAdView;
     private LinearLayout adContainer;
     private ConstraintLayout mConstraintLayout;
-//    private CheckBox mCheckBox;
+    private BillingProcessor mBillingProcessor;
+
 
     private double mTotalProgressPercent;
     private AppDatabase mDb;
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mCheckPurchase = new CheckPurchase(this);
+
         mprogressBar = findViewById(R.id.progressBar);
         mRecyclerView = findViewById(R.id.recyclerViewTasks);
         mProgressValue = findViewById(R.id.progressValue);
@@ -73,21 +80,47 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         adContainer = findViewById(R.id.adContainer);
         mAdView = findViewById(R.id.adView);
 
-        if(!isConnected(this)){
-            adContainer.setVisibility(View.GONE);
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mConstraintLayout.getLayoutParams();
-            params.bottomMargin = 0;
+        if(!isConnected(this) || mCheckPurchase.isUserPurchased()){
+            removeAds();
 
-        }else{
+        } else{
+
             adContainer.setVisibility(View.VISIBLE);
+            mBillingProcessor = new BillingProcessor(this, AppConfig.LICENSE_KEY, new BillingProcessor.IBillingHandler() {
+                @Override
+                public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
+
+                    if(productId.equals(PRODUCT_ID)){
+                        mCheckPurchase.setUserPurchased(true);
+                        Toast.makeText(MainActivity.this, "Your purchase was successful. Ads Removed.", Toast.LENGTH_LONG).show();
+                        removeAds();
+                    }
+
+                }
+
+                @Override
+                public void onPurchaseHistoryRestored() {
+                }
+
+                @Override
+                public void onBillingError(int errorCode, Throwable error) {
+                    Toast.makeText(MainActivity.this, "Purchase was unsuccessful.", Toast.LENGTH_SHORT).show();
+                    mCheckPurchase.setUserPurchased(false );
+                }
+
+                @Override
+                public void onBillingInitialized() {
+
+                }
+            });
+
+
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mConstraintLayout.getLayoutParams();
             int pxValue = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, this.getResources().getDisplayMetrics());
             params.bottomMargin = pxValue;
 
             List<String> testDevices = new ArrayList<>();
             testDevices.add(AdRequest.DEVICE_ID_EMULATOR);
-            testDevices.add("868624031394743");
-            testDevices.add("868624031394750");
             RequestConfiguration requestConfiguration
                     = new RequestConfiguration.Builder()
                     .setTestDeviceIds(testDevices)
@@ -104,23 +137,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
         }
 
-//        List<String> testDevices = new ArrayList<>();
-//        testDevices.add(AdRequest.DEVICE_ID_EMULATOR);
-//        testDevices.add("868624031394743");
-//        testDevices.add("868624031394750");
-//        RequestConfiguration requestConfiguration
-//                = new RequestConfiguration.Builder()
-//                .setTestDeviceIds(testDevices)
-//                .build();
-//        MobileAds.setRequestConfiguration(requestConfiguration);
-//
-//        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-//            @Override
-//            public void onInitializationComplete(InitializationStatus initializationStatus) {
-//            }
-//        });
-//        AdRequest adRequest = new AdRequest.Builder().build();
-//        mAdView.loadAd(adRequest);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -174,9 +190,16 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         setupViewModel();
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
+
+        if(mCheckPurchase.isUserPurchased()){
+            MenuItem item = menu.findItem(R.id.remove_ads);
+            item.setVisible(false);
+        }
+
         return true;
     }
 
@@ -192,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 });
                 return true;
             case R.id.remove_ads:
+                mBillingProcessor.purchase(this, PRODUCT_ID);
                 return true;
 
         }
@@ -212,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
             @Override
             public void run() {
                 mDb.taskDao().updateTask(taskEntry);
-                Log.d("oncheckList", " "+taskEntry.isChecked() +"---");
             }
         });
     }
@@ -241,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 mprogressBar.setProgress((int)mTotalProgressPercent);
                 mProgressValue.setText((int)mTotalProgressPercent + " %");
 
-                Log.d("setupVM", " called TotalPercent = " + (int)mTotalProgressPercent );
                 mAdapter.setTasks(taskEntries);
             }
         });
@@ -265,5 +287,26 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         } else {
             return false;
         }
+    }
+
+    private void removeAds() {
+        adContainer.setVisibility(View.GONE);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mConstraintLayout.getLayoutParams();
+        params.bottomMargin = 0;
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if(!mBillingProcessor.handleActivityResult(requestCode, resultCode, data))
+            super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void onDestroy() {
+        if (mBillingProcessor != null) {
+            mBillingProcessor.release();
+        }
+        super.onDestroy();
     }
 }

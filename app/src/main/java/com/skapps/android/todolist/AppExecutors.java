@@ -1,4 +1,4 @@
-package com.example.android.todolist;
+package com.skapps.android.todolist;
 
 
 import android.os.Handler;

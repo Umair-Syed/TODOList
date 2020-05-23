@@ -4,7 +4,7 @@ android {
     compileSdkVersion 28
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.example.android.exercisescourse"
+        applicationId "com.skapps.android.exercisescourse"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -36,4 +36,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
     implementation 'com.google.android.gms:play-services-ads:19.1.0'
+    implementation 'com.android.billingclient:billing:2.2.1'
+    implementation 'com.google.firebase:firebase-core:17.4.2'
+    implementation 'com.anjlab.android.iab.v3:library:1.0.44'
 }

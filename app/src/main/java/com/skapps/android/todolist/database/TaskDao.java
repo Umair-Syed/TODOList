@@ -1,4 +1,4 @@
-package com.example.android.todolist.database;
+package com.skapps.android.todolist.database;
 
 import java.util.List;
 

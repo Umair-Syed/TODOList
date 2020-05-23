@@ -1,6 +1,6 @@
 
 
-package com.example.android.todolist;
+package com.skapps.android.todolist;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.example.android.todolist.database.TaskEntry;
+import com.skapps.android.todolist.database.TaskEntry;
 
 import java.text.SimpleDateFormat;
 import java.util.List;

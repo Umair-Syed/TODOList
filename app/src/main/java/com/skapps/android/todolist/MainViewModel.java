@@ -1,9 +1,9 @@
-package com.example.android.todolist;
+package com.skapps.android.todolist;
 
 import android.app.Application;
 
-import com.example.android.todolist.database.AppDatabase;
-import com.example.android.todolist.database.TaskEntry;
+import com.skapps.android.todolist.database.AppDatabase;
+import com.skapps.android.todolist.database.TaskEntry;
 
 import java.util.List;
 

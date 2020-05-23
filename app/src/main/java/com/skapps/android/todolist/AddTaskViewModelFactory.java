@@ -1,6 +1,6 @@
-package com.example.android.todolist;
+package com.skapps.android.todolist;
 
-import com.example.android.todolist.database.AppDatabase;
+import com.skapps.android.todolist.database.AppDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;

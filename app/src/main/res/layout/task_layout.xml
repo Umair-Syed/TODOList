@@ -8,7 +8,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="8dp"
-    tools:context="com.example.android.todolist.MainActivity">
+    tools:context="com.skapps.android.todolist.MainActivity">
 
 
     <TextView
