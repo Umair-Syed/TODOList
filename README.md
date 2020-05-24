@@ -10,3 +10,12 @@ Features:
 4. Drag to change position (not fully implemented)
 5. Update tasks.
 
+<h3>Screen Shots</h3>
+
+1. ![1](/screenshots/screenshot1.jpg)
+
+2. ![2](/screenshots/screenshot2.jpg)
+
+3. ![3](/screenshots/screenshot3.jpg)
+
+
