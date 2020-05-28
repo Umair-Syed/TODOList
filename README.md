@@ -12,7 +12,7 @@ Features:
 
 <h3>Screen Shots</h3>
 
-1. ![1](/screenshots/screenshot1.jpg)
+1. <img src="/screenshots/screenshot2/jpg" width="50%">
 
 2. ![2](/screenshots/screenshot2.jpg)
 
