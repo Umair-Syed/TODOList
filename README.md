@@ -10,12 +10,10 @@ Features:
 4. Drag to change position (not fully implemented)
 5. Update tasks.
 
+
 <h3>Screen Shots</h3>
 
-1. <img src="/screenshots/screenshot2/jpg" width="50%">
-
-2. ![2](/screenshots/screenshot2.jpg)
-
-3. ![3](/screenshots/screenshot3.jpg)
-
+<img src="/screenshots/screenshot1.jpg" height="50%" width="50%" >
+<img src="/screenshots/screenshot2.jpg" height="50%" width="50%" >
+<img src="/screenshots/screenshot3.jpg" height="50%" width="50%" >
 
