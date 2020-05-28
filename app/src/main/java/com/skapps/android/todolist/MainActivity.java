@@ -46,7 +46,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import static androidx.recyclerview.widget.DividerItemDecoration.VERTICAL;
 
 
-public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener, TaskAdapter.CheckBoxCheckListener{
+public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemClickListener, TaskAdapter.CheckBoxCheckListener, BillingProcessor.IBillingHandler{
 
     private String PRODUCT_ID = "com.skapps.android.todolist.id";
 
@@ -86,33 +86,7 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         } else{
 
             adContainer.setVisibility(View.VISIBLE);
-            mBillingProcessor = new BillingProcessor(this, AppConfig.LICENSE_KEY, new BillingProcessor.IBillingHandler() {
-                @Override
-                public void onProductPurchased(@NonNull String productId, TransactionDetails details) {
-
-                    if(productId.equals(PRODUCT_ID)){
-                        mCheckPurchase.setUserPurchased(true);
-                        Toast.makeText(MainActivity.this, "Your purchase was successful. Ads Removed.", Toast.LENGTH_LONG).show();
-                        removeAds();
-                    }
-
-                }
-
-                @Override
-                public void onPurchaseHistoryRestored() {
-                }
-
-                @Override
-                public void onBillingError(int errorCode, Throwable error) {
-                    Toast.makeText(MainActivity.this, "Purchase was unsuccessful.", Toast.LENGTH_SHORT).show();
-                    mCheckPurchase.setUserPurchased(false );
-                }
-
-                @Override
-                public void onBillingInitialized() {
-
-                }
-            });
+            mBillingProcessor = new BillingProcessor(this, AppConfig.LICENSE_KEY, this);
 
 
             ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) mConstraintLayout.getLayoutParams();
@@ -191,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
     }
 
 
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);
@@ -215,7 +191,17 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 });
                 return true;
             case R.id.remove_ads:
-                mBillingProcessor.purchase(this, PRODUCT_ID);
+                if(isConnected(this)){
+                    if(mBillingProcessor == null){
+                        mBillingProcessor = new BillingProcessor(this, AppConfig.LICENSE_KEY, this);
+                        mBillingProcessor.purchase(this, PRODUCT_ID);
+                    }else{
+                        mBillingProcessor.purchase(this, PRODUCT_ID);
+                    }
+                }else{
+                    Toast.makeText(this, "No Internet Connection.", Toast.LENGTH_SHORT).show();
+                }
+
                 return true;
 
         }
@@ -309,4 +295,30 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
         }
         super.onDestroy();
     }
+
+    @Override
+    public void onProductPurchased(String productId, TransactionDetails details) {
+        if(productId.equals(PRODUCT_ID)){
+            mCheckPurchase.setUserPurchased(true);
+            Toast.makeText(MainActivity.this, "Your purchase was successful. Ads Removed.", Toast.LENGTH_LONG).show();
+            removeAds();
+        }
+    }
+
+    @Override
+    public void onPurchaseHistoryRestored() {
+
+    }
+
+    @Override
+    public void onBillingError(int errorCode, Throwable error) {
+        Toast.makeText(MainActivity.this, "Purchase was unsuccessful.", Toast.LENGTH_LONG).show();
+        mCheckPurchase.setUserPurchased(false );
+    }
+
+    @Override
+    public void onBillingInitialized() {
+
+    }
+
 }
