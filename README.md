@@ -1,7 +1,7 @@
 # TODOList
 A simple yet powerful to-do list app
 
-<a href='https://play.google.com/store/apps/details?id=com.skapps.android.exercisescourse&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' width='800' height='200' object-fit="cover"/></a>
+<a href='https://play.google.com/store/apps/details?id=com.skapps.android.exercisescourse&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png' style='width=50%'/></a>
 
 Features:
 1. Add new tasks and set priorities to tasks.
