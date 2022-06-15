@@ -5,9 +5,6 @@
     <item
         android:id="@+id/delete_all_tasks"
         android:title="@string/delete_all_tasks"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/remove_ads"
-        android:title="@string/remove_ads"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_baseline_delete_sweep_24"
+        app:showAsAction="always"/>
 </menu>
