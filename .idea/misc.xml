@@ -9,8 +9,15 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/drawable/ic_baseline_delete_sweep_24.xml" value="0.1" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/drawable/ic_launcher_background.xml" value="0.133" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/drawable/progress_bar.xml" value="0.1275" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/layout/activity_add_task.xml" value="0.1" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/layout/activity_main.xml" value="0.3333333333333333" />
         <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/layout/content_main.xml" value="0.14402173913043478" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/layout/task_layout.xml" value="0.1" />
         <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/menu/menu.xml" value="0.22" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.128" />
+        <entry key="..\:/Users/Public/AndroidStudioProjects/TODOList/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.128" />
       </map>
     </option>
   </component>

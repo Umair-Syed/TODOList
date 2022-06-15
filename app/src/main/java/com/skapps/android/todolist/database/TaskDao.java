@@ -13,7 +13,8 @@ import androidx.room.Update;
 @Dao
 public interface TaskDao{
 
-    @Query("SELECT * FROM task ORDER BY priority")
+//
+    @Query("SELECT * FROM task")
     LiveData<List<TaskEntry>> loadAllTasks();
 
     @Insert

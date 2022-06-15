@@ -2,6 +2,7 @@ package com.skapps.android.todolist;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.skapps.android.todolist.database.AppDatabase;
 import com.skapps.android.todolist.database.TaskEntry;
@@ -16,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Collections;
 import java.util.List;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -69,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            boolean drag = false;
+
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 int position_dragged = viewHolder.getAdapterPosition();
@@ -76,9 +82,44 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
 
                 Collections.swap(mAdapter.getTasks(), position_dragged, position_target);
                 mAdapter.notifyItemMoved(position_dragged, position_target);
+
                 return false;
             }
 
+            @Override
+            public void onSelectedChanged(@Nullable RecyclerView.ViewHolder viewHolder, int actionState) {
+                super.onSelectedChanged(viewHolder, actionState);
+
+                if(actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
+                    drag = true;
+                }
+
+                if(actionState == ItemTouchHelper.ACTION_STATE_IDLE && drag) {
+                    Log.d("DragTest","DRAGGGING stop");
+                    drag= false;
+
+                    final List<TaskEntry> NewTasks =  mAdapter.getTasks();
+                    AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                mDb.taskDao().deleteAll();
+
+                                for(int i =0; i < NewTasks.size(); i++){
+                                    TaskEntry task = NewTasks.get(i);
+                                    mDb.taskDao().insertTask(new TaskEntry(
+                                            task.getDescription(),
+                                            task.getPriority(),
+                                            task.getUpdatedAt(),
+                                            task.isChecked()
+                                    ));
+                                }
+                            }catch (Exception ignored){}
+
+                        }
+                    });
+                }
+            }
 
             @Override
             public void onSwiped(@NonNull final RecyclerView.ViewHolder viewHolder, int swipeDir) {
@@ -89,7 +130,9 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                     @Override
                     public void run() {
-                        mDb.taskDao().deleteTask(taskToBeDeleted);
+                        try {
+                            mDb.taskDao().deleteTask(taskToBeDeleted);
+                        }catch (Exception ignored){}
                     }
                 });
 
@@ -101,16 +144,14 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         AppExecutors.getInstance().diskIO().execute(new Runnable() {
                             @Override
                             public void run() {
-                                mDb.taskDao().insertTask(taskToBeDeleted);
+                                try {
+                                    mDb.taskDao().insertTask(taskToBeDeleted);
+                                }catch (Exception ignored){}
                             }
                         });
 
                     }
                 }).show();
-
-
-
-
             }
         }).attachToRecyclerView(mRecyclerView);
 

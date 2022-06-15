@@ -20,7 +20,8 @@
             android:value="ca-app-pub-3334522491409129~8533906735"/>
 
         <!-- The manifest entry for the MainActivity -->
-        <activity android:name="com.skapps.android.todolist.MainActivity">
+        <activity android:name="com.skapps.android.todolist.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
