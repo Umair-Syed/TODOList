@@ -7,8 +7,8 @@ android {
         applicationId "com.skapps.android.exercisescourse"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 2
-        versionName "2.0"
+        versionCode 4
+        versionName "3.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -35,5 +35,4 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
-    implementation 'com.google.firebase:firebase-core:17.4.2'
 }
