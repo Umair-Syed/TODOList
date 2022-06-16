@@ -13,7 +13,8 @@ Features:
 
 <h3>Screen Shots</h3>
 
-<img src="/screenshots/screenshot1.jpg" height="50%" width="50%" >
-<img src="/screenshots/screenshot2.jpg" height="50%" width="50%" >
-<img src="/screenshots/screenshot3.jpg" height="50%" width="50%" >
+<img src="/screenshots/screenshot1.png" height="50%" width="50%" >
+<img src="/screenshots/screenshot2.png" height="50%" width="50%" >
+<img src="/screenshots/screenshot3.png" height="50%" width="50%" >
+<img src="/screenshots/screenshot4.png" height="50%" width="50%" >
 
