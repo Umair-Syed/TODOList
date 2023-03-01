@@ -164,12 +164,8 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                 startActivity(addTaskIntent);
             }
         });
-
-
         setupViewModel();
     }
-
-
 
 
     @Override
@@ -201,6 +197,33 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                             }
                         })
                         .setMessage( "Do you want to delete all tasks?")
+                        .show();
+                break;
+            case R.id.uncheck_all:
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("Reset task list")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                final List<TaskEntry> taskEntries = mAdapter.unselectAll();
+
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for(TaskEntry taskEntry: taskEntries){
+                                            mDb.taskDao().updateTask(taskEntry);
+                                        }
+
+                                    }
+                                });
+                            }
+                        })
+                        .setMessage( "Do you want to un-check all tasks?")
                         .show();
 
                 return true;

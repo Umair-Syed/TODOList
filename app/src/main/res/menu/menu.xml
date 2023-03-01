@@ -6,5 +6,10 @@
         android:id="@+id/delete_all_tasks"
         android:title="@string/delete_all_tasks"
         android:icon="@drawable/ic_baseline_delete_sweep_24"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/uncheck_all"
+        android:title="@string/uncheck_all"
+        android:icon="@drawable/baseline_check_box"
+        app:showAsAction="never"/>
 </menu>

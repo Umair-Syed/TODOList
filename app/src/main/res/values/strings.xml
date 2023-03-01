@@ -21,5 +21,6 @@
     <string name="delete_all_tasks">Delete All Tasks</string>
     <string name="remove_ads">Remove Ads</string>
     <string name="you_ve_got_nothing_to_do">You\'ve got nothing to do.</string>
+    <string name="uncheck_all">Reset all tasks</string>
 
 </resources>
