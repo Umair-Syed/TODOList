@@ -22,5 +22,7 @@
     <string name="remove_ads">Remove Ads</string>
     <string name="you_ve_got_nothing_to_do">You\'ve got nothing to do.</string>
     <string name="uncheck_all">Reset all tasks</string>
+    <string name="sort_by_priority">Sort task by priority</string>
+    <string name="sort_by_check">Show pending tasks first</string>
 
 </resources>

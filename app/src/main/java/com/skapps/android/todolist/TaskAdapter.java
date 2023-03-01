@@ -33,7 +33,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private List<TaskEntry> mTaskEntries;
     private Context mContext;
 
-    private boolean isUnselectedAll;
     // Date formatter
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
 
@@ -135,17 +134,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         notifyDataSetChanged();
     }
 
-
-    public List<TaskEntry> unselectAll(){
-        Log.e("onClickSelectAll","yes");
-        isUnselectedAll=true;
-        for(TaskEntry taskEntry: mTaskEntries){
-            taskEntry.setChecked(false);
-
-        }
-        return mTaskEntries;
-
-    }
 
 
     public interface ItemClickListener {

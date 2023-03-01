@@ -12,4 +12,15 @@
         android:title="@string/uncheck_all"
         android:icon="@drawable/baseline_check_box"
         app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/sort_by_priority"
+        android:title="@string/sort_by_priority"
+        android:icon="@drawable/baseline_sort"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/sort_by_check"
+        android:title="@string/sort_by_check"
+        android:icon="@drawable/baseline_sort"
+        app:showAsAction="never"/>
 </menu>

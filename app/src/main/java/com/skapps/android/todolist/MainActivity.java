@@ -14,7 +14,10 @@ import com.skapps.android.todolist.database.AppDatabase;
 import com.skapps.android.todolist.database.TaskEntry;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -210,23 +213,104 @@ public class MainActivity extends AppCompatActivity implements TaskAdapter.ItemC
                         })
                         .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                final List<TaskEntry> taskEntries = mAdapter.unselectAll();
 
                                 AppExecutors.getInstance().diskIO().execute(new Runnable() {
                                     @Override
                                     public void run() {
-                                        for(TaskEntry taskEntry: taskEntries){
+                                        for(TaskEntry taskEntry: mAdapter.getTasks()){
+                                            taskEntry.setChecked(false);
                                             mDb.taskDao().updateTask(taskEntry);
                                         }
-
                                     }
                                 });
                             }
                         })
                         .setMessage( "Do you want to un-check all tasks?")
                         .show();
+                break;
+            case R.id.sort_by_priority:
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("Sort tasks")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            final List<TaskEntry> tasks =  mAdapter.getTasks();
+                                            mDb.taskDao().deleteAll();
+                                            Collections.sort(tasks, new Comparator<TaskEntry>(){
+                                                public int compare(TaskEntry o1, TaskEntry o2){
+                                                    return o1.getPriority() - o2.getPriority();
+                                                }
+                                            });
 
-                return true;
+                                            for(int i =0; i < tasks.size(); i++){
+                                                TaskEntry task = tasks.get(i);
+                                                mDb.taskDao().insertTask(new TaskEntry(
+                                                        task.getDescription(),
+                                                        task.getPriority(),
+                                                        task.getUpdatedAt(),
+                                                        task.isChecked()
+                                                ));
+                                            }
+                                        }catch (Exception ignored){}
+                                    }
+                                });
+                            }
+                        })
+                        .setMessage( "Do you want to sort list by priority?")
+                        .show();
+                break;
+            case R.id.sort_by_check:
+                new AlertDialog.Builder(this)
+                        .setCancelable(false)
+                        .setTitle("Show pending tasks first")
+                        .setPositiveButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        })
+                        .setNegativeButton("Yes", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            final List<TaskEntry> tasks =  mAdapter.getTasks();
+                                            mDb.taskDao().deleteAll();
+
+                                            Collections.sort(tasks, new Comparator<TaskEntry>() {
+                                                @Override
+                                                public int compare(TaskEntry o1, TaskEntry o2) {
+                                                    return Boolean.compare(o1.isChecked(), o2.isChecked());
+                                                }
+                                            });
+
+
+                                            for(int i =0; i < tasks.size(); i++){
+                                                TaskEntry task = tasks.get(i);
+                                                mDb.taskDao().insertTask(new TaskEntry(
+                                                        task.getDescription(),
+                                                        task.getPriority(),
+                                                        task.getUpdatedAt(),
+                                                        task.isChecked()
+                                                ));
+                                            }
+                                        }catch (Exception ignored){}
+                                    }
+                                });
+                            }
+                        })
+                        .setMessage( "Do you want to sort list to show pending tasks first?")
+                        .show();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
