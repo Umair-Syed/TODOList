@@ -7,7 +7,7 @@ Features:
 1. Add new tasks and set priorities to tasks.
 2. Progress bar to keep you updated about your progress. 
 3. Swipe to delete task.
-4. Drag to change position (not fully implemented)
+4. Drag to change position.
 5. Update tasks.
 
 
